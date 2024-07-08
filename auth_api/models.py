@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 profile = get_user_model()
 
 class User(models.Model):
-    userId = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_Id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     firstName = models.CharField(max_length=15, null=False, default=None)
     lastName = models.CharField(max_length=15, null=False, default=None)
     email = models.EmailField(max_length=30, unique=True, null=False, default=None)

@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from .serializers import LoginSerializer, RegisterOrganisationSerializers, UserSerializer, UserSerializer, \
+from .serializers import LoginSerializer, RegisterOrganisationSerializers, RegisterUserSerializer, UserSerializer, \
     OrganisationSerializer
 from .models import User, Organisation
 from rest_framework.decorators import api_view
@@ -13,6 +13,11 @@ from django.contrib.auth.models import User as p
 from django.contrib.auth import authenticate, login
 from rest_framework.permissions import IsAuthenticated
 
+
+
+class IndexView(APIView):
+    def get(self, request):
+        return Response ("HNG11 STAGE2 ")
 
 class RegisterUserView(APIView):
     def get(self, request):
@@ -27,7 +32,7 @@ class RegisterUserView(APIView):
 
     def post(self, request):
         """Create a User"""
-        serializer = UserSerializer(data=request.data)
+        serializer = RegisterUserSerializer(data=request.data)
         if serializer.is_valid():
             try:
                 # Creates an AbstractBaseUser
@@ -43,7 +48,7 @@ class RegisterUserView(APIView):
                 user = User(**serializer.validated_data)
                 user.save()
 
-                # Creates an default Organisation with User name   
+                # Creates an default Organisation with User name
                 org = Organisation.objects.create(name=f"{user.firstName}'s Organisation", description='')
                 org.users.add(user)  # Add user to the organisation
                 org.save()
@@ -52,7 +57,7 @@ class RegisterUserView(APIView):
                 user.owner = a
                 user.save()
 
-                # Generate AccessToken for User 
+                # Generate AccessToken for User
                 token = RefreshToken.for_user(a)
 
                 return Response({'status': 'success', 'message': 'Registration successful',
@@ -111,10 +116,13 @@ class UserView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        user = User.objects.get(userId=pk)
-        return Response(
-            {'status': 'success', 'message': 'User retrieved successfully', 'data': UserSerializer(user).data},
-            status=status.HTTP_200_OK)
+        try:
+            user = User.objects.get(user_Id=pk)
+            return Response(
+                {'status': 'success', 'message': 'User retrieved successfully', 'data': UserSerializer(user).data},
+                status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'status': 'error', 'message': 'User not found'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrganisationView(APIView):
@@ -124,8 +132,8 @@ class OrganisationView(APIView):
         user = User.objects.get(email=request.user)
         organisations = Organisation.objects.filter(users=user)
         return Response({'status': 'success', 'message': 'Organisations retrieved successfully', 'data': {
-                'organisations': OrganisationSerializer(organisations, many=True).data
-            }}, status=status.HTTP_200_OK)
+            'organisations': OrganisationSerializer(organisations, many=True).data
+        }},status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = RegisterOrganisationSerializers(data=request.data)
@@ -145,13 +153,13 @@ class OrganisationDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        try:
+
             user = User.objects.get(email=request.user)
             organisation = Organisation.objects.get(orgId=pk)
             if user in organisation.users.all():
                 return Response({'status': 'success', 'message': 'Organisation retrieved successfully',
                                  'data': OrganisationSerializer(organisation).data}, status=status.HTTP_200_OK)
-        except Exception as e:
+
             return Response(
                 {'status': 'Bad request', 'message': 'You do not have access to this organisation', 'statusCode': 403},
                 status=status.HTTP_403_FORBIDDEN)
@@ -160,15 +168,17 @@ class OrganisationDetailView(APIView):
 class AddUserToOrganisationView(APIView):
     def get(self, request, pk):
         context = {
-            'user_id': "Enter a valid Id"
+            'user_Id': "Enter a valid Id"
         }
         return Response(context, status=status.HTTP_200_OK)
 
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, pk):
-        user_id = request.data.get('userId')
+        user_id = request.data.get('user_Id')
         try:
             organisation = Organisation.objects.get(orgId=pk)
-            user = get_object_or_404(User, userId=user_id)
+            user = get_object_or_404(User, user_Id=user_id)
             print(user)
             if user:
                 organisation.users.add(user)

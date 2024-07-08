@@ -1,15 +1,14 @@
+# serializers.py
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-
 from .models import User, Organisation
 
 
-class UserSerializer(serializers.ModelSerializer):
+class RegisterUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['userId','email', 'firstName', 'lastName', 'email', 'password', 'phone']
+        fields = ['firstName', 'lastName', 'email', 'password', 'phone']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
         }
 
     def validate(self, data):
@@ -28,29 +27,34 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'errors': errors})
         return data
 
-
     def validate_phone(self, value):
         """
         Check if the phone number is valid.
         """
         if not value.isdigit():
-            raise serializers.ValidationError("Phone number must be digits.")
+            raise serializers.ValidationError("Phone number must contain only digits.")
         elif len(value) <= 10:
-            raise serializers.ValidationError("Phone number cannot be less than 10 digits.")
+            raise serializers.ValidationError("Phone number cannot be less than 10 digits long.")
         elif not isinstance(value, str):
             raise serializers.ValidationError("Phone number must be a string.")
         return value
 
 
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField()
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['user_Id', 'firstName', 'lastName', 'email', 'phone']
 
 
 class OrganisationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
         fields = ['orgId', 'name', 'description']
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
 
 
 class RegisterOrganisationSerializers(serializers.ModelSerializer):
@@ -75,4 +79,3 @@ class RegisterOrganisationSerializers(serializers.ModelSerializer):
         if errors:
             raise serializers.ValidationError({'errors': errors})
         return data
-

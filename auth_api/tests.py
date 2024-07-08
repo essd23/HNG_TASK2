@@ -113,7 +113,7 @@ class TokenGenerationTest(APITestCase):
         self.abstract_user = AbstractUser.objects.create_user(username='testuser@example.com',
                                                               email='testuser@example.com', password='password')
         self.user_profile = User.objects.create(
-            userId=uuid.uuid4(),  # Generate a UUID for the User model
+            user_Id=uuid.uuid4(),  # Generate a UUID for the User model
             firstName='Test',
             lastName='User',
             email='testuser@example.com',
@@ -127,7 +127,7 @@ class TokenGenerationTest(APITestCase):
         payload = token.payload
         print(f'Token payload: {payload}')
         print(f'AbstractUser ID: {self.abstract_user.id}')
-        print(f'User profile ID: {self.user_profile.userId}')
+        print(f'User profile ID: {self.user_profile.user_Id}')
         self.assertEqual(payload['user_id'], self.abstract_user.id)
 
     def test_token_expiration(self):
