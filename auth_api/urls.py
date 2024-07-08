@@ -1,8 +1,10 @@
 from django.urls import path
-from auth_api.views import AddUserToOrganisationView, OrganisationDetailView, OrganisationView, UserView, loginView, \
-    RegisterUserView, IndexView
 
-urlpatterns = [path('', IndexView.as_view(),name='index'),
+from auth_api import views
+from auth_api.views import AddUserToOrganisationView, OrganisationDetailView, OrganisationView, UserView, loginView, \
+    RegisterUserView
+
+urlpatterns = [path('', views.index,name='index'),
     path('auth/register', RegisterUserView.as_view(), name='register'),
     path('auth/login', loginView, name='login'),
     path('api/users/<str:pk>', UserView.as_view(), name='user'),

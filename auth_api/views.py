@@ -1,4 +1,5 @@
 # views.py
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,11 +14,8 @@ from django.contrib.auth.models import User as p
 from django.contrib.auth import authenticate, login
 from rest_framework.permissions import IsAuthenticated
 
-
-
-class IndexView(APIView):
-    def get(self, request):
-        return Response ("HNG11 STAGE2 ")
+def index(request):
+    return HttpResponse ("HNG11 STAGE2 ")
 
 class RegisterUserView(APIView):
     def get(self, request):
