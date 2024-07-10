@@ -154,13 +154,17 @@ class OrganisationDetailView(APIView):
 
             user = User.objects.get(email=request.user)
             organisation = Organisation.objects.get(orgId=pk)
-            if user in organisation.users.all():
-                return Response({'status': 'success', 'message': 'Organisation retrieved successfully',
+            if not organisation:
+                return Response(
+                    {'status': 'Bad request', 'message': 'You do not have access to this organisation',
+                     'statusCode': 403},
+                    status=status.HTTP_403_FORBIDDEN)
+
+
+            return Response({'status': 'success', 'message': 'Organisation retrieved successfully',
                                  'data': OrganisationSerializer(organisation).data}, status=status.HTTP_200_OK)
 
-            return Response(
-                {'status': 'Bad request', 'message': 'You do not have access to this organisation', 'statusCode': 403},
-                status=status.HTTP_403_FORBIDDEN)
+
 
 
 class AddUserToOrganisationView(APIView):
