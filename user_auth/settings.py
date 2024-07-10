@@ -80,11 +80,11 @@ WSGI_APPLICATION = 'user_auth.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': os.environ.get('db_password'),
-        'HOST': os.environ.get('db_host'),
-        'PORT': os.environ.get('db_port'),
+        'NAME': 'postgres',
+        'USER': 'postgres.hqieasbvavqfvupynuku',
+        'PASSWORD': '.Holusola1@',
+        'HOST': 'aws-0-eu-central-1.pooler.supabase.com',
+        'PORT': '5432',
     }
 }
 
